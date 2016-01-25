@@ -43,8 +43,7 @@ public class BreadthFirstPath {
 		k_hop = new ArrayList<Integer>();//初始化的工作。
 		k_hop_list = new ArrayList<ArrayList<Integer>>();//一个顶点的k_hop集合。
 		intersect_list = new ArrayList<Integer>();
-		System.out.println(source.get(0)+" "+source.get(1));
-		bfs(G,source.get(0),source.get(1),k);	
+		bfs(G,source,k);	
 	}
 	
 	//求出一个顶点的k_hop集合
@@ -213,6 +212,7 @@ public class BreadthFirstPath {
 	//求出S个顶点的k_hop集合的交集，source个顶点的问题构造索引而不是全图构建索引。
 	private void bfs(Graph G, List<Integer> source, int k){
 		for(int i = 0; i < source.size(); i++){
+			long start=new Date().getTime();
 			List<Integer> k_hop_set = new ArrayList<Integer>();//存储经过排序的3跳顶点
 			List<ArrayList<Integer>> k_hop_adj_list = new ArrayList<ArrayList<Integer>>();//把每个顶点的邻接数组都存储下来，包括k=1 k =2
 			Queue<Integer> q = new Queue<Integer>();
@@ -221,7 +221,7 @@ public class BreadthFirstPath {
 		        distTo[source.get(i)] = 0;
 		        marked[source.get(i)] = true;
 		        q.enqueue(source.get(i));
-		        int v = source.get(i);
+		        int v = source.get(i);//取出一个点
 		        while (!q.isEmpty()) {
 		        	ArrayList<Integer> k_hop_adj = new ArrayList<Integer>();//生成一个khopadj
 		            v = q.dequeue();
@@ -236,15 +236,21 @@ public class BreadthFirstPath {
 		                    q.enqueue(e.other(v));
 		                }
 		            } 
-		            if(k_hop_adj.size() > 0)
+		            if(k_hop_adj.size() > 0){
 		            	k_hop_adj_list.add(k_hop_adj);
+		                System.out.println("debug:k_hop_adj"+k_hop_adj);
+		            }
 		        }
 	        //对选择的用户顶点的3跳集合进行败者树归并排序 排序的路数等于1+n+n^2
 		        LoserTree loserTree = new LoserTree(k_hop_adj_list);
 		        loserTree.merge();
 		        k_hop_set = loserTree.getMerge_list();
 		        marked = new boolean[G.V()];
+		        System.out.println("debug:keyhopset:"+k_hop_set);
 		        k_hop_list.add((ArrayList<Integer>) k_hop_set);//khopset就是一个集合装着每个人的东西
+		        long end=new Date().getTime();
+		        System.out.println("cindextimefor"+i+":"+(end-start));
+		        System.out.println("debug end");
 	       
 		}
 	}
@@ -261,10 +267,18 @@ public class BreadthFirstPath {
 			FileInput in = new FileInput(filePath);
 			Graph G = new Graph(in);
 			List<Integer> source = new ArrayList<Integer>();
-			addSource(source,G.getvertices());
+			for(int i=0;i<1000;i++)
+				source.add(i);
 			bfs_start = new Date().getTime();
 			BreadthFirstPath bfs = new BreadthFirstPath(G, source, 5);
-			System.out.println(bfs.k_hop_list.size());
+			bfs_finish= new Date().getTime();
+			System.out.println("timeforall:"+(bfs_finish-bfs_start));
+			int indexsize=0;
+			for(int i=0;i<1000;i++){
+				indexsize+=bfs.k_hop_list.get(i).size();
+			}
+			System.out.println(indexsize);
+			
 		 
 	 }
 
@@ -311,7 +325,6 @@ public class BreadthFirstPath {
 	public ArrayList<Integer> getIntersect_list() {
 		return intersect_list;
 	}
-
 	public void setIntersect_list(ArrayList<Integer> intersect_list) {
 		this.intersect_list = intersect_list;
 	}

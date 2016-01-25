@@ -54,31 +54,33 @@ public class FindKeyPoints {
 		System.out.println("index : " + bfs_duration1 + "ms");
 		System.out.println("time : " + bfs_duration0 + "ms");
 		System.out.println("key_set : " + bfs.getK_hop().size());//+ key_set.toString()
+		
+		
 	}
 
 	public static ArrayList<Integer> find_key_set_sort(List<ArrayList<Integer>> k_hop_list){
 		boolean finish = false;
 		//申请一个数组记录k_hop_list中每个顶点的邻接数组的当前移动index
-		ArrayList<Integer> key_set_list = new ArrayList<Integer>();
+		ArrayList<Integer> key_set_list = new ArrayList<Integer>();//结果空间
         int k_hop_index[] = new int [k_hop_list.size()];
         for(int r = 0; r < k_hop_index.length; r++)
         	k_hop_index[r] = 0;
         
-        ArrayList<Integer> adj0List = k_hop_list.get(0);
+        ArrayList<Integer> adj0List = k_hop_list.get(0);//k_hop_list.get(0)
         for(int s = 0; s < adj0List.size(); s++){
         	//记录有多少个邻接数组中包含当前顶点
         	int flag = 0;
         	for(int t = 1; t < k_hop_list.size(); t++){
         		//获取当前比较顶点的邻接数组
-        		ArrayList<Integer> adjList = k_hop_list.get(t);
+        		ArrayList<Integer> adjList = k_hop_list.get(t);//去除1的khop信息
         		//如果其中有一个顶点的邻接数组以及被遍历比较，那么就可以终止比较，剩下没有比较的顶点均不是关键人集合
         		if(k_hop_index[t] >= adjList.size()){//?index大于K
         			finish = true;
         			break;
         		}
         		//从上次比较的索引开始，与其中一个用户给定顶点的3跳集合进行对比 知道找到比当前元素大的元素停止
-        		for(int u = k_hop_index[t]; u < adjList.size(); u++){
-        			if(adj0List.get(s) > adjList.get(u))
+        		for(int u = k_hop_index[t]; u < adjList.size(); u++){//再娶一个点，遍历adjlist
+        			if(adj0List.get(s) > adjList.get(u))//比较0[s],t=1[u]
         				k_hop_index[t] ++;
        				else if(adj0List.get(s) < adjList.get(u))
        					break;
